@@ -1,8 +1,9 @@
-// Thingiverse link: TBD
+// Thingiverse link: https://www.thingiverse.com/thing:7193444
 // author: Shawn Featherly
+// v0.2
 
 // width of the panel in mm. This should be a multiple of 60. Because almost all wire shelves have a 60mm frequency for their zig-zag brace.
-LabelWidth = 120;
+LabelWidth = 120; // [60:300]
 
 // inner height of the shelf brim that the 4 pegs will snap inside in mm. minimum usable size is 6.5mm.
 ClampHeight = 16;
@@ -53,18 +54,33 @@ module LabelPanel()
       rotate([-35,0,0])
         translate([0,-(DepthForPaper+LabelHeightOverClamp),0])
           cube([widthInsidePins,DepthForPaper+LabelHeightOverClamp,LabelDepth]);
+
+    // Label part by engraving its ClampHeight
+    translate([2*PinWidth,0,-0.2])
+      scale([-1,1,1]) //mirror
+        linear_extrude(height=.4, convexity=4)
+          text
+          (
+            str(ClampHeight), 
+            size=0.8*ClampHeight,
+            font="Source Code Pro:style=ExtraLight",
+            halign="right",
+            valign="center"
+          );
   }
 
-  // Label part by engraving its ClampHeight
-  translate([LabelWidth/2,0,0.2])
+  // Back panel engraving to ensure 0's don't lose their center
+  // NOTE: This 2-layer text is a workaround for OpenSCAD not coming with stencil fonts
+  translate([2*PinWidth+(.04*ClampHeight),0,0.2]) // (.04*C...) - shifts text to center it ontop of engraving
     scale([-1,1,1]) //mirror
       linear_extrude(height=.2, convexity=4)
         text
         (
           str(ClampHeight), 
-          size=0.8*ClampHeight,
-          font="Bitstream Vera Sans",
-          halign="center",
+          size=0.9*ClampHeight,
+          spacing=.9, // spacing between letters.
+          font="Source Code Pro:style=Bold",
+          halign="right", // right is needed because "halign=center" only centers spacing=1
           valign="center"
         );
 }
